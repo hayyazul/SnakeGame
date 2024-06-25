@@ -1,0 +1,1 @@
+A simple Snake clone made via HTML, CSS, and Javascript.
