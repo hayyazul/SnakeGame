@@ -1,12 +1,23 @@
 'use strict';
 
+
+// Globals
 var board;
 var context;
+var graphics;
 
-var width = 10;
-var height = 10;
+const GAMEBOARD_WIDTH = 10
+const GAMEBOARD_HEIGHT = 10;
 
-// Initializer function.
+const sizePerCell = 30;
+const spacingBetweenCells = 6;
+// Gameboard globals
+var width = sizePerCell * GAMEBOARD_WIDTH + spacingBetweenCells * (GAMEBOARD_WIDTH + 1);
+var height = sizePerCell * GAMEBOARD_HEIGHT + spacingBetweenCells * (GAMEBOARD_HEIGHT + 1);
+
+
+
+// This function runs upon the webpage being opened.
 window.onload = function () {
     board = document.getElementById("board");
     board.width = width;
@@ -14,12 +25,14 @@ window.onload = function () {
 
     context = board.getContext("2d");
 
+    graphics = new Graphics(context, width, height, sizePerCell, spacingBetweenCells);
+
     update()
 };
 
-function update() {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, board.width, board.height)
-}
 
-console.log('Hello world');
+
+function update() {
+    graphics.drawBackground("black");
+    graphics.drawEmptyBoard();
+}
