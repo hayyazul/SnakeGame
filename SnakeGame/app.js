@@ -1,11 +1,13 @@
 // Globals
 var board;
 var gameBoard;
+var input;
+var gameInput;
 var context;
 var graphics;
 
 var lastTime = 0;
-const desiredFPS = 60;
+const desiredFPS = 5;
 const frameTime = 1000 / desiredFPS; // Time per frame in milliseconds
 
 const GAMEBOARD_WIDTH = 10;
@@ -57,6 +59,8 @@ window.onload = function () {
 
     graphics = new Graphics(context, width, height, sizePerCell, spacingBetweenCells);
     gameBoard = new GameBoard(GAMEBOARD_WIDTH, GAMEBOARD_HEIGHT);
+    input = new Input();
+    gameInput = new GameInput();
 
     // Start the game loop
     requestAnimationFrame(gameLoop);
@@ -68,24 +72,37 @@ function draw() {
 }
 
 function update() {
-    // Placeholder for game logic update
-    // You should implement your game's logic update here
+    // Update input.
+    gameInput.updateInput(input);
+
+    // Then update the game.
+    return gameBoard.update(gameInput.direction);
 }
 
-function gameLoop(timestamp) {
-    requestAnimationFrame(gameLoop);
+function gameLoop() {
 
     // Calculate elapsed time since last frame
+    timestamp = performance.now();
     let elapsed = timestamp - lastTime;
 
     // Check if enough time has elapsed to update/draw
+    let gameEnd = false;
+
     if (elapsed > frameTime) {
         lastTime = timestamp - (elapsed % frameTime);
 
         // Update game logic
-        update();
+        gameEnd = update();
 
         // Draw game state
         draw();
     }
+
+    if (gameEnd) {
+        console.log("Game over!");
+        return null;
+    }
+
+    requestAnimationFrame(gameLoop);
+
 }

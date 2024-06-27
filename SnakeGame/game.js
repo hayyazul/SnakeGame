@@ -278,13 +278,13 @@ class GameBoard {
 
         // If the snake has eaten, then the tail of the snake does not change position because the snake grew, so do not remove it in this case.
         if (this.snake.hasEaten) {
-            apple1DCoordinate = this.convert2DCoordsTo1D(this.apple.x, this.apple.y);
+            let apple1DCoordinate = this.convert2DCoordsTo1D(this.apple.x, this.apple.y);
             this.unavailableCells = removeElementFromArray(this.unavailableCells, apple1DCoordinate);
 
         } else {
             let snakeBodyLength = this.snake.bodyCoordinates.length - 1;
-            if (snakeBodyLength >= 0) {
-                tail1DCoordinate = this.convert2DCoordsTo1D(this.snake.bodyCoordinates[snakeBodyLength - 1][0],
+            if (snakeBodyLength > 0) {
+                let tail1DCoordinate = this.convert2DCoordsTo1D(this.snake.bodyCoordinates[snakeBodyLength - 1][0],
                     this.snake.bodyCoordinates[snakeBodyLength - 1][1]);
                 this.unavailableCells = removeElementFromArray(this.unavailableCells, tail1DCoordinate);
             }
