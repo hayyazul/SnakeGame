@@ -89,8 +89,10 @@ class Snake {
             this.bodyCoordinates[i] = this.bodyCoordinates[i - 1];
         }
 
-        this.bodyCoordinates[0][0] = this.headX;
-        this.bodyCoordinates[0][1] = this.headY;
+        if (this.bodyCoordinates.length !== 0) {
+            this.bodyCoordinates[0][0] = this.headX;
+            this.bodyCoordinates[0][1] = this.headY;
+        }
 
         this.moveHead();
     }
@@ -119,7 +121,7 @@ class Snake {
         }
     }
 
-    get nextTickHeadPosition() {
+    nextTickHeadPosition() {
         return [this.headX + this.dx, this.headY + this.dy];
     }
 
@@ -280,8 +282,12 @@ class GameBoard {
             this.unavailableCells = removeElementFromArray(this.unavailableCells, apple1DCoordinate);
 
         } else {
-            tail1DCoordinate = this.convert2DCoordsTo1D(this.snake.bodyCoordinates[-1][0], this.snake.bodyCoordinates[-1][1]);
-            this.unavailableCells = removeElementFromArray(this.unavailableCells, tail1DCoordinate);
+            let snakeBodyLength = this.snake.bodyCoordinates.length - 1;
+            if (snakeBodyLength >= 0) {
+                tail1DCoordinate = this.convert2DCoordsTo1D(this.snake.bodyCoordinates[snakeBodyLength - 1][0],
+                    this.snake.bodyCoordinates[snakeBodyLength - 1][1]);
+                this.unavailableCells = removeElementFromArray(this.unavailableCells, tail1DCoordinate);
+            }
         }
     }
 

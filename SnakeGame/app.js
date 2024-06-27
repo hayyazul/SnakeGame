@@ -1,18 +1,20 @@
-'use strict';
-
-
 // Globals
 var board;
 var gameBoard;
 var context;
 var graphics;
 
-const GAMEBOARD_WIDTH = 10
+var lastTime = 0;
+const desiredFPS = 60;
+const frameTime = 1000 / desiredFPS; // Time per frame in milliseconds
+
+const GAMEBOARD_WIDTH = 10;
 const GAMEBOARD_HEIGHT = 10;
 
 const sizePerCell = 30;
 const spacingBetweenCells = 6;
-// Gameboard globals
+
+// Game board globals
 var width = sizePerCell * GAMEBOARD_WIDTH + spacingBetweenCells * (GAMEBOARD_WIDTH + 1);
 var height = sizePerCell * GAMEBOARD_HEIGHT + spacingBetweenCells * (GAMEBOARD_HEIGHT + 1);
 
@@ -31,7 +33,7 @@ function removeElementFromArray(array, elementValue) {
     returns: Updated array.
     */
 
-    const index = array.indexOf(element);
+    const index = array.indexOf(elementValue);
     if (index !== -1) {
         array.splice(index, 1);
     }
@@ -49,22 +51,41 @@ function removeElementAtIndex(array, index) {
 window.onload = function () {
     board = document.getElementById("board");
     board.width = width;
-    board.height = height; 
+    board.height = height;
 
     context = board.getContext("2d");
 
     graphics = new Graphics(context, width, height, sizePerCell, spacingBetweenCells);
     gameBoard = new GameBoard(GAMEBOARD_WIDTH, GAMEBOARD_HEIGHT);
 
-    update()
-    draw()
+    // Start the game loop
+    requestAnimationFrame(gameLoop);
 };
 
 function draw() {
     graphics.drawEmptyBoard();
     gameBoard.draw(graphics);
-
 }
 
 function update() {
+    // Placeholder for game logic update
+    // You should implement your game's logic update here
+}
+
+function gameLoop(timestamp) {
+    requestAnimationFrame(gameLoop);
+
+    // Calculate elapsed time since last frame
+    let elapsed = timestamp - lastTime;
+
+    // Check if enough time has elapsed to update/draw
+    if (elapsed > frameTime) {
+        lastTime = timestamp - (elapsed % frameTime);
+
+        // Update game logic
+        update();
+
+        // Draw game state
+        draw();
+    }
 }

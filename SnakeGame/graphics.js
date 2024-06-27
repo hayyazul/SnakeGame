@@ -38,11 +38,6 @@ class Graphics {
         returns: Null
         */
 
-        if (color === "red") {
-            console.log(x);
-            console.log(y);
-        }
-
         // Find the topleft corner position of the cell in pixels.
         var topLeftXPos = this.spacing * (x + 1) + x * this.cellSize;
         var topLeftYPos = this.spacing * (y + 1) + y * this.cellSize;
