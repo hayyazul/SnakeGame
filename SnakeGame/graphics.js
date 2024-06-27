@@ -53,6 +53,8 @@ class Graphics {
 
         returns: Null
         */
+        this.drawBackground('black');
+
         for (let i = 0; i < this.gridWidth; i++) {
             for (let j = 0; j < this.gridHeight; j++) {
                 this.drawGridCell(i, j, this.emptyCellColor);

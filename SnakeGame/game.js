@@ -34,6 +34,10 @@ const vector2 = {
         this.y += otherVector2.y;
     },
 
+    isEqualToVector: function (otherVector2) {
+        return this.x === otherVector2.x && this.y === otherVector2.y;
+    },
+
     displayValues: function () {
         console.log(`x: ${this.x} | y: ${this.y} \n`)
     }
@@ -63,23 +67,51 @@ class Snake {
         }
         this.bodyParts[this.bodyParts.length - 1].plusEqualVector(this.moveDelta);
     }
+
+    draw(graphics) {
+        for (let i = 0; i < this.bodyParts.length; i++) {
+            graphics.drawGridCell(this.bodyParts[i].x, this.bodyParts[i].y, 'green');
+        }
+    }
 }
 
 // TODO: Create apple structure.
 
 const apple = {
-    x: 0,
-    y: 0,
+    coordinates: vector2.create(0, 0),
 
     create: function (x, y) {
-        this.x = x;
-        this.y = y;
+        const newApple = Object.create(this);
+        newApple.coordinates = vector2.create(x, y);
+
+        return newApple;
+    },
+
+    draw: function (graphics) {
+        graphics.drawGridCell(this.coordinates.x, this.coordinates.y, 'red');
     }
 }
 // TODO: Create game logic class which manages the game
-class GameLogic {
+class Game {
 
     constructor(boardWidth, boardHeight) {
         this.snake = new Snake(randInt(0, boardWidth - 1), randInt(0, boardHeight - 1));
+        this.apple = apple.create(randInt(0, boardWidth - 1), randInt(0, boardHeight - 1))
+
+        var appleIsOnSnake = this.apple.coordinates.isEqualToVector(this.snake.bodyParts[0]);
+
+        while (appleIsOnSnake) {
+            apple.coordinates.setValues(randInt(0, boardWidth - 1), randInt(0, boardHeight - 1));
+            appleIsOnSnake = this.apple.coordinates.isEqualToVector(this.snake.bodyParts[0]);
+        }
+    }
+
+    update() {
+
+    }
+
+    draw(graphics) {
+        this.snake.draw(graphics);
+        this.apple.draw(graphics);
     }
 }

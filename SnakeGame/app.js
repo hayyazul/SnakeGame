@@ -4,7 +4,9 @@
 // Globals
 var board;
 var context;
+
 var graphics;
+var game;
 
 const GAMEBOARD_WIDTH = 10
 const GAMEBOARD_HEIGHT = 10;
@@ -25,11 +27,20 @@ window.onload = function () {
     context = board.getContext("2d");
 
     graphics = new Graphics(context, width, height, sizePerCell, spacingBetweenCells);
+    game = new Game(GAMEBOARD_WIDTH, GAMEBOARD_HEIGHT);
 
-    update()
+    draw()
 };
 
+function gameLoop() {
+    // requestAnimationFrame(gameLoop);
 
+}
+
+function draw() {
+    graphics.drawEmptyBoard();
+    game.draw(graphics);
+}
 
 function update() {
     graphics.drawBackground("black");
