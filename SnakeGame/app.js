@@ -7,6 +7,13 @@ var context;
 
 var graphics;
 var game;
+var input;
+var gameInput;
+
+const FPS = 5;
+const MS_PER_FRAME = 1000 / FPS;
+var current_time = 0;
+var previous_frame_time = 0;
 
 const GAMEBOARD_WIDTH = 10
 const GAMEBOARD_HEIGHT = 10;
@@ -28,13 +35,26 @@ window.onload = function () {
 
     graphics = new Graphics(context, width, height, sizePerCell, spacingBetweenCells);
     game = new Game(GAMEBOARD_WIDTH, GAMEBOARD_HEIGHT);
+    input = new Input();
+    gameInput = new GameInput();
 
-    draw()
+    gameLoop();
 };
 
 function gameLoop() {
-    // requestAnimationFrame(gameLoop);
+    requestAnimationFrame(gameLoop);
 
+    current_time = performance.timeOrigin + performance.now();
+    var elapsed_time = current_time - previous_frame_time;
+
+    // if enough time has elapsed, draw the next frame
+    if (elapsed_time > MS_PER_FRAME) {
+        previous_frame_time = current_time - (elapsed_time % MS_PER_FRAME);  // If the elapsed time is a bit longer, then adjust for that.
+
+        updateInput();
+        update();
+        draw();
+    }
 }
 
 function draw() {
@@ -43,6 +63,9 @@ function draw() {
 }
 
 function update() {
-    graphics.drawBackground("black");
-    graphics.drawEmptyBoard();
+    game.update(gameInput);
+}
+
+function updateInput() {
+    gameInput.update(input);
 }
