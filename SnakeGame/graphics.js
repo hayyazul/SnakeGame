@@ -16,15 +16,11 @@ class Graphics {
         this.emptyCellColor = "black";  // `rgb(170 170 170)`;;
 
         this.previousBoardToDraw = new Array(this.gridWidth * this.gridHeight);  // 1-D array containing the board that was last drawn.
-        debugger;
         this.boardToDraw = new Array(this.gridWidth * this.gridHeight);  // 1-D array containing all the index color reference for each cell.
         this.cellColorPalette = [];  // Dynamic dictionary containing number-color pairs. If a new color is seen, then it adds it to this dict.
 
         this.drawBackground();
     }
-
-    // TODO: Make it more efficient. Idea: make a "buffer" which holds the information as to what cells to draw. This can be updated freely.
-    // Only draw it at the end.
 
     addColorToPalette(color) {
         /*
@@ -80,7 +76,6 @@ class Graphics {
                 if (colorIndex !== previousColorIndex) {
                     this.displayGridCell(i, j, this.cellColorPalette[colorIndex]);
                     this.previousBoardToDraw[boardToDrawIndex] = colorIndex;  // Update the previous board values as you go.
-                    debugger;
                 }
             }
         }

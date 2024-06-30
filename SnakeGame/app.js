@@ -68,30 +68,8 @@ function gameLoop() {
         previous_frame_time = current_time - (elapsed_time % MS_PER_FRAME);  // If the elapsed time is a bit longer, then adjust for that.
 
         updateInput();
-
-        let timestamp1 = performance.now();
         gameEnd = update();
-        let timestamp2 = performance.now();
         draw();
-        let timestamp3 = performance.now();
-
-        if (ARRAY_TIME_TO_DRAW.length < 100) {
-            ARRAY_TIME_TO_DRAW.push(timestamp3 - timestamp2);
-            ARRAY_TIME_TO_UPDATE.push(timestamp2 - timestamp1);
-        } else {
-            gameEnd = 2;
-
-            var total_draw_time = 0;
-            var total_update_time = 0;
-
-            for (let i = 0; i < ARRAY_TIME_TO_DRAW.length; i++) {
-                total_draw_time += ARRAY_TIME_TO_DRAW[i];
-                total_update_time += ARRAY_TIME_TO_UPDATE[i];
-            }
-
-            console.log(`Average time to draw: ${total_draw_time / ARRAY_TIME_TO_DRAW.length} ms`);  // 156ms before optimization, 23.14 ms after.
-            console.log(`Average time to update: ${total_update_time / ARRAY_TIME_TO_UPDATE.length} ms`);  // 0.02ms
-        }
 
     }
 
