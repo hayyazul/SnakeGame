@@ -1,0 +1,1 @@
+Note: the commit about optimization is a bit misleading. The reason why it was so slow before is because of a bug.
