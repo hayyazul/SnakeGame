@@ -18,6 +18,18 @@ class Input {
 
     }
 
+    resetInputStates() {
+        this.keyDownStates = {
+            'ArrowUp': false,
+            'ArrowDown': false,
+            'ArrowLeft': false,
+            'ArrowRight': false
+        };
+
+        this.currentKeyPressed = null;
+        this.previousKeyPressed = null;
+    }
+
     KeyPressedHandler(event) {
         let keyPressed = event.key;
 
@@ -30,6 +42,7 @@ class Input {
 
     KeyUpHandler(event) {
         let keyPressed = event.key;
+
         if (keyPressed in this.keyDownStates) {
             this.keyDownStates[keyPressed] = false;
         }
@@ -39,6 +52,16 @@ class Input {
 class GameInput {
     constructor() {
         this.directionToChangeTo = 'none';
+
+        this.lastKeyPressed = null;
+        this.currentKeyPressed = null;
+    }
+
+    initialize() {
+        this.directionToChangeTo = 'none';
+
+        this.lastKeyPressed = null;
+        this.currentKeyPressed = null;
     }
 
     update(input) {
@@ -49,8 +72,17 @@ class GameInput {
             'ArrowLeft': 'left'
         };
 
-        if (input.currentKeyPressed in keyToDirection) {
-            this.directionToChangeTo = keyToDirection[input.currentKeyPressed];
+        if (input.currentKeyPressed !== this.lastKeyPressed) {
+            this.currentKeyPressed = input.currentKeyPressed;
+            this.lastKeyPressed = this.currentKeyPressed;
+
+        } else {
+            this.currentKeyPressed = null;
+        }
+        // console.log(this.currentKeyPressed, this.lastKeyPressed);
+
+        if (this.currentKeyPressed in keyToDirection) {
+            this.directionToChangeTo = keyToDirection[this.currentKeyPressed];
         } else {
             this.directionToChangeTo = "none";
         }

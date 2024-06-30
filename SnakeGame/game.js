@@ -40,10 +40,21 @@ const vector2 = {
 
     displayValues: function () {
         console.log(`x: ${this.x} | y: ${this.y} \n`)
+    },
+
+    isInArray: function (arr) {
+        /*
+         Input has to be an array of exclusively vector2's.
+        */
+        for (let i = 0; i < arr.length; i++) {
+            if (this.isEqualToVector(arr[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
-// TODO: Create snake class.
 class Snake {
     /*
      bodyParts: Array containing vector2 coordinates of various body parts.
@@ -51,8 +62,23 @@ class Snake {
     */
 
     constructor(startingX, startingY) {
+        this.bodyParts;
+        this.isDead;
+        this.moveDelta;
+        this.direction;
+
+        this.initialize(startingX, startingY);
+    }
+
+    initialize(startingX, startingY) {
+        /*
+          Resets base information about the snake.
+        */
+
         this.bodyParts = [];  // index 0 is the tail, the last index is the head. The game will initialize the start values.
         this.bodyParts.push(vector2.create(startingX, startingY));
+
+        this.isDead = false;
 
         this.moveDelta = vector2.create(0, 0);
         this.direction = "none";
@@ -60,6 +86,17 @@ class Snake {
 
     get headIndex() {
         return this.bodyParts.length - 1;
+    }
+
+    get isSelfIntersecting() {
+        let headCoordinates = this.bodyParts[this.headIndex];
+        let nonHeadCoordinates = this.bodyParts.slice(0, this.bodyParts.length - 1);
+
+        for (let i = 0; i < nonHeadCoordinates.length; i++) {
+            if (headCoordinates.isEqualToVector(nonHeadCoordinates[i])) { return true; };
+        }
+
+        return false;
     }
 
     changeDirection(newDirection) {
@@ -95,7 +132,7 @@ class Snake {
                     break;
             }
 
-            this.direction = newDirection;
+            if (newDirection !== "none" || newDirection === null) { this.direction = newDirection };
         }
 
     }
@@ -120,6 +157,10 @@ class Snake {
         this.bodyParts[this.bodyParts.length - 1].plusEqualVector(this.moveDelta);
     }
 
+    killSnake() {
+        this.isDead = true;
+    }
+
     update(directionInput, hasEaten) {
         this.changeDirection(directionInput);
         if (hasEaten) {
@@ -135,7 +176,6 @@ class Snake {
     }
 }
 
-// TODO: Create apple structure.
 
 const apple = {
     coordinates: vector2.create(0, 0),
@@ -147,42 +187,74 @@ const apple = {
         return newApple;
     },
 
+    setCoordinates: function (newCoordinates) {
+        this.coordinates.copyVector(newCoordinates);
+    },
+
     draw: function (graphics) {
         graphics.drawGridCell(this.coordinates.x, this.coordinates.y, 'red');
     }
 }
-// TODO: Create game logic class which manages the game
+
 class Game {
 
     constructor(boardWidth, boardHeight) {
         this.width = boardWidth;
         this.height = boardHeight;
 
-        this.snake = new Snake(randInt(0, boardWidth - 1), randInt(0, boardHeight - 1));
-        this.apple = apple.create(randInt(0, boardWidth - 1), randInt(0, boardHeight - 1))
+        this.snake = new Snake(-1, -1);
+        this.apple = apple.create(-1, -1);
         this.isAppleEaten = false;
 
-        var appleIsOnSnake = this.apple.coordinates.isEqualToVector(this.snake.bodyParts[0]);
+        this.initialize();
+    }
 
+    initialize() {
+        this.snake.initialize(randInt(0, this.width - 1), randInt(0, this.height - 1));
+        this.isAppleEaten = false;
+
+        var appleIsOnSnake = true;
         while (appleIsOnSnake) {
-            apple.coordinates.setValues(randInt(0, boardWidth - 1), randInt(0, boardHeight - 1));
+            this.apple.coordinates.setValues(randInt(0, this.width - 1), randInt(0, this.height - 1));
             appleIsOnSnake = this.apple.coordinates.isEqualToVector(this.snake.bodyParts[0]);
         }
     }
 
     update(gameInput) {
-        if (this.isSnakeHeadOnApple) {
-            this.isAppleEaten = true;
-            this.regenerateApple();
+        /*
+         Updates the game state w/ the given input.
+        returns: Whether the game has ended or not.
+        */
+        this.updateSnakeDeath();
+
+        if (!this.snake.isDead) {
+            if (this.isSnakeHeadOnApple) {
+                this.isAppleEaten = true;
+                this.regenerateApple();
+            } else {
+                this.isAppleEaten = false;
+            }
+
+            this.snake.update(gameInput.directionToChangeTo, this.isAppleEaten);
+        } else if (this.isWinConditionTrue) {
+            this.snake.changeDirection("stop");
+            console.log("You Win!");
+            return 2;
         } else {
-            this.isAppleEaten = false;
+            this.snake.changeDirection("stop");
+            console.log("Game Over!");
+            return 1;
         }
 
-        this.snake.update(gameInput.directionToChangeTo, this.isAppleEaten);
+        return 0;
     }
 
     get isSnakeHeadOnApple() {
         return this.snake.bodyParts[this.snake.headIndex].isEqualToVector(this.apple.coordinates);
+    }
+
+    get isWinConditionTrue() {
+        return this.snake.bodyParts.length === this.width * this.height;
     }
 
     get unoccupiedCellsCoordinates() {
@@ -213,25 +285,49 @@ class Game {
         return occupiedCellCoordinates;
     }
 
-    isCellOccupied(cellCoordinates) {
+    get isSnakeOutOfBounds() {
+        let headCoordinates = this.snake.bodyParts[this.snake.headIndex];
 
-        // First check if the apple occupies the coordinate.
-        if (cellCoordinates.isEqualToVector(this.apple.coordinates)) {
+        if (headCoordinates.x < 0 ||
+            headCoordinates.y < 0 ||
+            headCoordinates.x >= this.width ||
+            headCoordinates.y >= this.height)
+        {
             return true;
         }
 
+        return false;
+    }
+
+    isCellOccupied(cellCoordinates) {
+
+        // First check if the apple occupies the coordinate.
+        if (cellCoordinates.isEqualToVector(this.apple.coordinates)) { return true };
+
         // Then if the snake does.
-        for (let i = 0; i < this.snake.bodyParts.length; i++) {
-            if (cellCoordinates.isEqualToVector(this.snake.bodyParts[i])) {
-                return true;
-            }
-        }
+        if (cellCoordinates.isInArray(this.snake.bodyParts)) { return true; };
 
         // If neither cells occupy the given coordinate, 
         return false;
     }
 
+    updateSnakeDeath() {
+        if (this.isSnakeOutOfBounds || this.snake.isSelfIntersecting) {
+            this.snake.killSnake();
+        }
+    }
+
+    // TODO: Make this more efficient; simply respawn the apple until a valid position is found. Only resort to this vacancy finding strategy when most spots are taken up.
     regenerateApple() {
+        // If the proportion of free cells is less than 0.1%, then regeneration by repeating will take too many tries. Find unoccupied cells first.
+        if (this.snake.bodyParts.length / (this.width * this.height) > 0.999) {
+            this.regenerateAppleByFindingUnoccupiedCells();
+        } else {
+            this.regenerateAppleByRepeating();
+        }
+    }
+
+    regenerateAppleByFindingUnoccupiedCells() {
         let vacantCells = getSetEntries(this.unoccupiedCellsCoordinates);
 
         if (vacantCells.length !== 0) {
@@ -244,7 +340,21 @@ class Game {
             // If there are no vacant cells, the game should have ended by now. A placeholder value is put instead.
             this.apple.coordinates.setValues(-1, -1);
         }
+    }
 
+    regenerateAppleByRepeating() {
+        let appleIsOnSnake = true;
+
+        while (appleIsOnSnake) {
+            let randomCoordinate = vector2.create(randInt(0, this.width - 1), randInt(0, this.height - 1));
+            this.apple.coordinates.copyVector(randomCoordinate);
+
+            if (this.apple.coordinates.isInArray(this.snake.bodyParts)) {
+                appleIsOnSnake = true;
+                continue;
+            }
+            appleIsOnSnake = false;
+        }
     }
 
     draw(graphics) {

@@ -13,7 +13,6 @@ function getSetEntries(set) {
     for (const entry of entries) {
         entriesOfSet.push(entry[0]);
     }
-    console.log(entriesOfSet);
     return entriesOfSet;
 }
 
