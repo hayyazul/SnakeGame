@@ -37,7 +37,7 @@ window.onload = function () {
 
     context = board.getContext("2d");
 
-    graphics = new Graphics(context, width, height, sizePerCell, spacingBetweenCells);
+    graphics = new Graphics(context, GAMEBOARD_WIDTH, GAMEBOARD_HEIGHT, sizePerCell, spacingBetweenCells);
     game = new Game(GAMEBOARD_WIDTH, GAMEBOARD_HEIGHT);
     input = new Input();
     gameInput = new GameInput();
