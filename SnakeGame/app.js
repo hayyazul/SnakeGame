@@ -24,11 +24,6 @@ const spacingBetweenCells = 5;
 const width = sizePerCell * GAMEBOARD_WIDTH + spacingBetweenCells * (GAMEBOARD_WIDTH + 1);
 const height = sizePerCell * GAMEBOARD_HEIGHT + spacingBetweenCells * (GAMEBOARD_HEIGHT + 1);
 
-var ARRAY_TIME_TO_DRAW = [];
-var ARRAY_TIME_TO_UPDATE = [];
-
-
-
 // This function runs upon the webpage being opened.
 window.onload = function () {
     board = document.getElementById("board");
